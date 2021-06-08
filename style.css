@@ -1,0 +1,113 @@
+html,
+body {
+    font-size: 1rem;
+    font-family: "Source Code Pro", monospace;
+}
+.container {
+    max-width: 40rem;
+    margin: 3rem auto;
+}
+table {
+    border-collapse: separate;
+    border-spacing: 0.333rem;
+    margin: 2rem auto;
+}
+td {
+    margin: 0.5rem;
+    padding: 0;
+    animation: asdf 340ms;
+}
+@keyframes asdf {
+    0% {
+        opacity: 0.25;
+        transform: rotateY(-75deg) rotateX(-20deg) skew(10deg);
+        transform-origin: right top;
+    }
+    100% {
+        opacity: 1;
+        transform: rotateY(0) rotateX(0);
+    }
+}
+input[type=text] {
+    border: none;
+    background: rgba(180, 180, 255, 0.4);
+    font-size: 1.3rem;
+    padding: 0.5rem;
+    text-align: center;
+    width: 1.8rem;
+}
+.buttons {
+    margin: 0 auto;
+}
+button {
+    background: #dcdcdc;
+    border: 1px solid #bababa;
+    font-family: "Source Code Pro", monospace;
+    font-size: 1rem;
+    margin: 0.5rem;
+    padding: 0.2rem;
+    transition: all 120ms ease-in-out;
+}
+button:hover {
+    box-shadow: 0 6px 18px -12px #000;
+}
+#answer {
+    border: 1px solid transparent;
+    transition: all 120ms ease;
+    width: 25rem;
+}
+
+#warning {
+    max-height: 0;
+    margin: 1.2rem;
+    padding: 0.2rem;
+    transition: opacity 1250ms, max-height 1250ms;
+    opacity: 0;
+    overflow: hidden;
+}
+
+#warning.warn,
+#answer.error {
+    background: rgba(255, 210, 210, 0.2);
+    border: 1px solid #d00;
+    color: #d00;
+    max-height: 6rem;
+    opacity: 1;
+}
+
+/*******/
+input[type=checkbox] {
+    position: absolute;
+    left: -9999rem;
+}
+
+input[type=checkbox] + label {
+    cursor: pointer;
+}
+
+input[type=checkbox]:checked + label {
+    outline: 0;
+}
+
+input[type=checkbox]#all + label {
+    border-top: 1px solid #ccc;
+}
+
+input[type=checkbox] + label::before {
+    background: white;
+    border:1px solid #757575;
+    border-radius: 0.1rem;
+    content: '\a0';
+    display: inline-block;
+    height: 1rem;
+    margin-right: 0.4em;
+    vertical-align: middle;
+    width: 1rem;
+}
+
+input[type=checkbox]:checked + label::before {
+    background: white;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 216 146'%3E%3Cpath fill='%23757575' d='M168.86 37.966l-11.08-11.08c-1.52-1.52-3.367-2.28-5.54-2.28-2.172 0-4.02.76-5.54 2.28L93.254 80.414 69.3 56.38c-1.52-1.522-3.367-2.282-5.54-2.282-2.172 0-4.02.76-5.54 2.28L47.14 67.46c-1.52 1.522-2.28 3.37-2.28 5.542 0 2.172.76 4.02 2.28 5.54l29.493 29.493 11.08 11.08c1.52 1.52 3.368 2.28 5.54 2.28 2.173 0 4.02-.76 5.54-2.28l11.082-11.08L168.86 49.05c1.52-1.52 2.283-3.37 2.283-5.54 0-2.174-.76-4.02-2.28-5.54z'/%3E%3C/svg%3E");
+    background-position: 50% center;
+    background-repeat: no-repeat;
+}

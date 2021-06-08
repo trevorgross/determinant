@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Determinant calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="buttons">
+            <button id="add">Increase matrix size</button>
+            <input type="checkbox" id="randClr"> 
+                <label for="randClr">Use random colors for new cells</label><br>
+            <button id="randfill">Fill with random numbers</button><br>
+            <button id="res">Calculate determinant</button><br>
+            Determinant: <input type="text" id="answer" placeholder="Determinant will appear here" disabled="disabled"><br>
+            <input type="checkbox" id="formatResult">
+                <label for="formatResult">Format result (insert commas)</label>
+        </div>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <input size="2" type="text">
+                    </td>
+                    <td>
+                        <input size="2" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input size="2" type="text">
+                    </td>
+                    <td>
+                        <input size="2" type="text">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+<script src="console.js"></script>
+<script src="det.js"></script>
+<script>
+
+(function(window) {
+    var app = {
+        $tbl : document.getElementsByTagName('table')[0],
+        toggleFormattedResult : function() {
+            var v = document.getElementById('answer').value;
+            document.getElementById('answer').value = this.formatResult(v, app.UI.useFormattedAnswer());
+        },
+        enlarge : function() {
+            app.UI.enlarge(app.UI.useRandomColor());
+        },
+        randFill : function() {
+            var cells = this.$tbl.getElementsByTagName('input');
+            var i = 0;
+            var cl = cells.length;
+            for (;i<cl;i++) {
+                var neg = Math.random()*100 > 75 ? -1 : 1;        
+                cells[i].value = neg * Math.round(Math.random()*10);
+            }
+        },
+        formatResult : function(result, fmt) {
+            return fmt ? 
+                result.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ',') :
+                result.toString().replace(/\,/g, '');
+        },
+        createMtx : function(tbl) {
+            var tbl = tbl || this.$tbl;
+            var mtx = [];
+            var n = tbl.rows.length;
+            var i = 0;
+            for (;i<n;i++) {
+                (function(row) {
+                    var thisRow = [];
+                    var cells = tbl.rows[row].getElementsByTagName('td');
+                    var cL = cells.length;
+                    var k = 0;
+                    for (;k<cL;k++) {
+                        var cellInput = cells[k].getElementsByTagName('input')[0];
+                        var val = cellInput.value;
+                        // clean this up
+                        val.trim();
+                        val = parseInt(val);
+                        val = val.length == 0 ? 0 : val;
+                        val = (!(typeof val === 'number' && (val%1) === 0)) ? 0 : val;
+                        cellInput.value = val;
+                        thisRow.push(val);
+                    }
+                    mtx.push(thisRow);
+                }(i));
+            }
+
+            return mtx;
+        },
+        solve : function(mtx) {
+            return determinant(mtx);
+        }
+    };
+
+    window.app = app;
+
+}(window));
+
+(function(window) {
+    var UI = { 
+        enlarge : (function() {
+            var size = 2,
+                rand = function() {
+                    var rv = '';
+                    var i=0;
+                    while (i<3) {
+                        rv += Math.round(Math.random()*255)+', ';
+                        i++;
+                    }
+                    return rv;        
+                },
+                fn = function(inColor) {
+                    if (size >= 12)
+                        return;
+
+                    if (size > 9)
+                        this.showWarning();
+
+                    var tbl = app.$tbl;
+                    var rC = tbl.rows.length;
+                    tbl.insertRow(Math.round(rC*Math.random()));
+                    rC++;
+                    
+                    for (var i=0;i<rC;i++) {
+                        (function(i) {
+                            var cC = tbl.rows[i].getElementsByTagName('td').length;
+                            var k = rC - cC;
+                            while (k > 0) {
+                                var r = tbl.rows[i];
+                                var c = r.insertCell(Math.round(cC*Math.random()));
+                                var t = document.createElement('input');
+                                t.setAttribute('type','text');
+                                t.setAttribute('size',2);
+                                if (inColor)
+                                    t.setAttribute('style','background-color:rgba('+rand()+'0.4)');
+                                c.appendChild(t);
+                                k--;
+                            }
+                        }(i));    
+                    }
+                    size++;
+                };
+            return fn;
+        }()),
+        useRandomColor : function() {
+            return document.querySelector('#randClr').checked;
+        },
+        useFormattedAnswer : function() {
+            return document.querySelector('#formatResult').checked;
+        },
+        showWarning : function() {
+            if (document.querySelector('#warning'))
+                return;
+            
+            var c = document.querySelector('.container');
+            var d = document.createElement('div');
+            d.setAttribute('id', 'warning');
+            d.innerHTML = '11&times;11 matrices are the largest practical size. 12&times;12 may solve but will take a long time, and may hang your browser.';
+            c.insertBefore(d, app.$tbl);
+            window.getComputedStyle(d).maxHeight;
+            window.getComputedStyle(d).opacity;
+
+            var e = document.querySelector('#warning');
+            e.className += e.classList.contains('warn') ? '' : ' warn';
+        }
+    };
+
+    window.app = window.app || {};
+    app.UI = UI;
+}(window));
+
+document.getElementById('formatResult').addEventListener('change', function(e) {
+    app.toggleFormattedResult();
+});
+
+document.getElementById('add').addEventListener('click', function(e) {
+    app.enlarge();
+});
+
+document.getElementById('randfill').addEventListener('click', function(e) {
+    app.randFill();
+});
+
+document.getElementById('res').addEventListener('click', function(e) {
+    document.getElementById('answer').value = app.formatResult(app.solve(app.createMtx()), app.UI.useFormattedAnswer());
+});
+
+</script>
+</body>
+</html>
